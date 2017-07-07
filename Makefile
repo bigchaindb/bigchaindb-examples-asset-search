@@ -23,7 +23,7 @@ start_db:
 run: init start
 
 reinit_db: drop_db start_db
-	sleep 10
+	sleep 2
 
 stop:
 	docker-compose down

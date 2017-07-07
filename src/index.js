@@ -2,18 +2,17 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { composeWithDevTools } from 'redux-devtools-extension'
 import createHistory from 'history/createBrowserHistory'
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux'
-import { setSeed } from './actions'
 
 import thunk from 'redux-thunk'
 import appReducer from './reducers'
 
-import App from './components/App';
+import App from './components/App'
 
 import './index.css';
-import 'semantic-ui-css/semantic.css';
+import 'semantic-ui-css/semantic.css'
 
 const history = createHistory()
 
@@ -36,11 +35,3 @@ render(
     document.getElementById('root')
 )
 
-function boot() {
-    const seed = localStorage.getItem('seed')
-    if (seed) {
-        store.dispatch(setSeed(seed))
-    }
-}
-
-/* das */boot();

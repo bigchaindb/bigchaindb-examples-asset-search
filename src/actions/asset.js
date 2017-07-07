@@ -9,8 +9,8 @@ export default class Asset {
         this.dataType = `${this.appId}:${this.assetType}`
     }
 
-    load(dispatch, getState) {
-        return bdb.searchAssets(`"${this.dataType}"`)
+    load(query, dispatch, getState) {
+        return bdb.searchAssets(query)
             .then(assetIds =>
                 Promise.all(assetIds.map(assetId =>
                     bdb.getTransaction(assetId)
@@ -97,7 +97,7 @@ export default class Asset {
         switch (action) {
             case 'ADD':
                 dispatchObject[this.assetType] = {
-                    ...asset.asset.data[this.assetType],
+                    ...asset.asset.data.data,
                     _pk: asset.inputs[0].owners_before[0],
                     _tx: asset.id,
                     provenance

@@ -5,10 +5,13 @@
   "dependencies": {
     "bigchaindb-driver": "^0.3.0",
     "bip39": "^2.3.1",
+    "classnames": "^2.2.5",
     "marked": "^0.3.6",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-json-pretty": "^1.6.3",
+    "react-json-tree": "^0.10.9",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",

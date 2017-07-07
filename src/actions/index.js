@@ -1,10 +1,7 @@
-import { push } from 'react-router-redux'
-import bip39 from 'bip39'
-
 import * as bdb from '../bdb' // eslint-disable-line import/no-namespace
 import Asset from './asset'
 
-const appId = 'app'
+const appId = 'search'
 
 
 export const REQUEST_ASYNC = 'REQUEST_ASYNC'
@@ -18,68 +15,25 @@ export const receiveAsync = () => ({
     type: RECEIVE_ASYNC
 })
 
-export function generateMnemonic() {
-    return {
-        type: 'GENERATE_MNEMONIC',
-        seed: bip39.generateMnemonic()
-    }
-}
+export const clearResults = () => ({
+    type: 'CLEAR_RESULT'
+})
 
-export const profileAsset = new Asset(appId, 'profile')
+export const resultAsset = new Asset(appId, 'result')
 
-export function setSeed(seed) {
-    localStorage.setItem('seed', seed)
-
+export function initialize() {
     return (dispatch, getState) => {
-        const keypair = bdb.keypair(bip39.mnemonicToSeed(seed))
-
-        dispatch({
-            type: 'SET_KEYPAIR',
-            publicKey: keypair.publicKey,
-            privateKey: keypair.privateKey
-        })
-
-
         bdb.connect((ev) => {
-            profileAsset.updateStore(ev.asset_id, dispatch, getState)
+            resultAsset.updateStore(ev.asset_id, dispatch, getState)
         })
-
-        dispatch(requestAsync())
-        profileAsset.load(dispatch, getState)
-            .then(() => {
-                const state = getState()
-                const hasProfile = Object.values(state.profiles)
-                    .filter(profile => profile._pk === state.identity.keypair.publicKey)
-
-                if (hasProfile.length) {
-                    dispatch(push(`/profiles/${keypair.publicKey}`))
-                } else {
-                    dispatch(push('/onboarding'))
-                }
-                dispatch(receiveAsync())
-            })
     }
 }
 
-export function submitProfile(profile) {
+export function submitSearch(query) {
     return (dispatch, getState) => {
-        const { publicKey } = getState().identity.keypair
-
-        profileAsset.create(profile, dispatch, getState)
-            .then(() => dispatch(push(`/profiles/${publicKey}`)))
+        dispatch(requestAsync())
+        dispatch(clearResults())
+        resultAsset.load(query, dispatch, getState)
+            .then(() => dispatch(receiveAsync()))
     }
-}
-
-export function mapPublicKeyToProfile(publicKey, state) {
-    const filteredProfiles = Object.values(state.profiles)
-        .filter(profile => profile._pk === publicKey)
-    if (filteredProfiles.length) {
-        return filteredProfiles[0]
-    }
-    return null
-}
-
-export function logout() {
-    localStorage.clear()
-    window.location.href = '/'
 }
