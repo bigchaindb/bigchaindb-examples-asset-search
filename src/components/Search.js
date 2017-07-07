@@ -2,28 +2,33 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { Field, reduxForm } from 'redux-form'
-import { Form, Button } from 'semantic-ui-react'
-import JSONTree from 'react-json-tree'
+import { Form } from 'semantic-ui-react'
+import logo from '../bdb_logo.svg'
+import { BDB_API_PATH } from '../bdb'
 
-const theme = {
-    scheme: 'monokai',
-    author: 'wimer hazenberg (http://www.monokai.nl)',
-    base00: '#272822',
-    base01: '#383830',
-    base02: '#49483e',
-    base03: '#75715e',
-    base04: '#a59f85',
-    base05: '#f8f8f2',
-    base06: '#f5f4f1',
-    base07: '#f9f8f5',
-    base08: '#f92672',
-    base09: '#fd971f',
-    base0A: '#f4bf75',
-    base0B: '#a6e22e',
-    base0C: '#a1efe4',
-    base0D: '#66d9ef',
-    base0E: '#ae81ff',
-    base0F: '#cc6633'
+
+class SearchResult extends Component {
+    render() {
+        const { result } = this.props
+        return (
+            <div className="result">
+                <div className="result--header">
+                    <a href={`${BDB_API_PATH}transactions/${result._tx}`}
+                       target="_blank" rel="noopener noreferrer">
+                        {result._tx}
+                    </a>
+                </div>
+                <pre className="result-json" key={result._tx}>
+                    <code>
+                     {
+                         JSON.stringify(result.result, null, 2)
+                             .replace(/planets/, '<span>planets</span>')
+                     }
+                    </code>
+                </pre>
+            </div>
+        )
+    }
 }
 
 class Search extends Component {
@@ -62,27 +67,34 @@ class Search extends Component {
 
         return (
             <div className={classnames('wrap', { 'fix-search': isFixed })} id="wrap" ref="wrap">
-
-                <div className="search">
-                    <Form onSubmit={handleSubmit} autoComplete="off">
-                        <Form.Field>
-                            <Field name="query" component="input" type="text"
-                                   placeholder='Type to search BigchainDB' autoComplete="off"
-                                   required/>
-                        </Form.Field>
-                        <Button className="button primary" type='submit'>Search</Button>
-                    </Form>
+                <div className="search--container">
+                    <div className="logo--wrapper">
+                        <img src={logo} alt="Logo" className="logo--bdb"/>
+                    </div>
+                    <div className="search ui centered grid">
+                        <div id="search--wrap" className="five wide column">
+                            <div className="ui fluid icon input name">
+                                <Form onSubmit={handleSubmit} autoComplete="off">
+                                    <Form.Field>
+                                        <Field name="query" component="input" type="text"
+                                               placeholder='Type to search BigchainDB' autoComplete="off"
+                                               required/>
+                                        <button className="ui button primary bigchaindb"
+                                                type='submit'>Search</button>
+                                    </Form.Field>
+                                </Form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <main>
+                    <div className="results-meta">
+                        About { Object.values(results).length } results
+                    </div>
                     <div className="results">
                         { Object.values(results).map(result =>
-                            <div className="result">
-                                {result.result.url}
-                                <pre key={result._tx}>
-                                     {JSON.stringify(result.result, null, 2)}
-                                </pre>
-                            </div>
+                            <SearchResult key={result._tx} result={result} />
                         )}
                     </div>
                 </main>
