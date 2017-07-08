@@ -8,6 +8,7 @@ const async = (state = {}, action) => {
         case REQUEST_ASYNC:
             return {
                 ...state,
+                query: action.query,
                 isFetching: true,
             }
         case RECEIVE_ASYNC:

@@ -4,7 +4,8 @@ import { submitSearch } from '../actions/index'
 
 export default connect(
     state => ({
-        results: state.results
+        ...state.async,
+        results: state.results,
     }),
 
     dispatch => ({

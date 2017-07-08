@@ -61,7 +61,6 @@ export default class Asset {
         return bdb.listTransactions(assetId)
             .then((txList) => Promise.all(txList.map(tx => bdb.getTransaction(tx.id))))
             .then((txList) => {
-                const assetTransaction = JSON.parse(localStorage.getItem(assetId))
                 const assetFromState = getState()[this.assetCollection][assetId]
 
                 if (assetFromState) {

@@ -7,8 +7,9 @@ const appId = 'search'
 export const REQUEST_ASYNC = 'REQUEST_ASYNC'
 export const RECEIVE_ASYNC = 'RECEIVE_ASYNC'
 
-export const requestAsync = () => ({
-    type: REQUEST_ASYNC
+export const requestAsync = (query) => ({
+    type: REQUEST_ASYNC,
+    query
 })
 
 export const receiveAsync = () => ({
@@ -31,7 +32,7 @@ export function initialize() {
 
 export function submitSearch(query) {
     return (dispatch, getState) => {
-        dispatch(requestAsync())
+        dispatch(requestAsync(query))
         dispatch(clearResults())
         resultAsset.load(query, dispatch, getState)
             .then(() => dispatch(receiveAsync()))

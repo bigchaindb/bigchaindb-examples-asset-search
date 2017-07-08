@@ -3,13 +3,25 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { Field, reduxForm } from 'redux-form'
 import { Form } from 'semantic-ui-react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
+import { docco } from 'react-syntax-highlighter/dist/styles'
 import logo from '../bdb_logo.svg'
 import { BDB_API_PATH } from '../bdb'
 
-
 class SearchResult extends Component {
     render() {
-        const { result } = this.props
+        const { result, query } = this.props
+        const resultString = JSON.stringify(result.result, null, '\t')
+        const lineString = resultString.match(/[^\r\n]+/g)
+
+        const matchLines = []
+        lineString.forEach((line, index) => {
+            if (line.indexOf(query) > -1) {
+                matchLines.push(index + 1)
+            }
+        })
+        // console.log(lineString)
+
         return (
             <div className="result">
                 <div className="result--header">
@@ -18,14 +30,21 @@ class SearchResult extends Component {
                         {result._tx}
                     </a>
                 </div>
-                <pre className="result-json" key={result._tx}>
-                    <code>
-                     {
-                         JSON.stringify(result.result, null, 2)
-                             .replace(/planets/, '<span>planets</span>')
-                     }
-                    </code>
-                </pre>
+                <SyntaxHighlighter
+                    language='json'
+                    style={docco}
+                    wrapLines={true}
+                    lineStyle={lineNumber => {
+                        const style = { display: 'block' }
+                        if (matchLines.includes(lineNumber)) {
+                            style.backgroundColor = 'rgba(57, 186, 145, .2)'
+                        }
+                        return style
+                    }}>
+                    {
+                        resultString
+                    }
+                </SyntaxHighlighter>
             </div>
         )
     }
@@ -59,12 +78,13 @@ class Search extends Component {
 
     render() {
         const {
+            isFetching,
+            query,
             results,
             handleSubmit
         } = this.props
 
         const { isFixed } = this.state
-
         return (
             <div className={classnames('wrap', { 'fix-search': isFixed })} id="wrap" ref="wrap">
                 <div className="search--container">
@@ -87,17 +107,20 @@ class Search extends Component {
                         </div>
                     </div>
                 </div>
-
-                <main>
-                    <div className="results-meta">
-                        About { Object.values(results).length } results
-                    </div>
-                    <div className="results">
-                        { Object.values(results).map(result =>
-                            <SearchResult key={result._tx} result={result} />
-                        )}
-                    </div>
-                </main>
+                    <main>
+                        <div className="results-meta">
+                            About { Object.values(results).length } results
+                            ... { isFetching ? 'Still loading' : null }
+                        </div>
+                        <div className="results">
+                            { Object.values(results).map(result =>
+                                <SearchResult
+                                    key={result._tx}
+                                    query={query}
+                                    result={result}/>
+                            )}
+                        </div>
+                    </main>
             </div>
         )
     }
