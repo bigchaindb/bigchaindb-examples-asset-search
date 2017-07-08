@@ -68,7 +68,8 @@ class Search extends Component {
     }
 
     handleScroll(event) {
-        const scrollTop = event.srcElement.scrollTop
+        const srcElement = event.target || event.srcElement
+        const scrollTop = srcElement.scrollTop
         if (scrollTop > 147) {
             this.setState({ isFixed: true })
         } else {
