@@ -26,19 +26,22 @@ class Scraper(object):
 
     def add_swapi(self):
         SWAPI_URL = "http://swapi.co/api/"
+        endpoints = ['people', 'planets', 'films', 'species',
+                     'vehicles', 'starships']
 
-        response = requests.get(SWAPI_URL + 'planets')
+        for endpoint in endpoints:
+            response = requests.get(SWAPI_URL + endpoint)
 
-        if response.status_code == 200:
-            json_data = response.json()
-            for result in json_data['results']:
-                self.send_to_bdb({
-                    'type': 'search:results',
-                    'data': {
-                        'source': 'swapi:planets',
-                        'result': result
-                    }
-                }, metadata=None)
+            if response.status_code == 200:
+                json_data = response.json()
+                for result in json_data['results']:
+                    self.send_to_bdb({
+                        'type': 'search:results',
+                        'data': {
+                            'source': 'swapi:{}'.format(endpoint),
+                            'result': result
+                        }
+                    }, metadata=None)
 
     def send_to_bdb(self, asset, metadata):
         bdb_asset = {
@@ -60,7 +63,7 @@ class Scraper(object):
         return fulfilled_tx
 
 
-if __name__ == '__main__':
+def main():
     # argument parsing
     parser = ArgumentParser(description='BDB/Scraper')
     req_group = parser.add_argument_group('required arguments')
@@ -88,3 +91,7 @@ if __name__ == '__main__':
 
     if args.cmd == 'swapi':
         scraper.add_swapi()
+
+
+if __name__ == '__main__':
+    main()

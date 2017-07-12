@@ -63,7 +63,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'bigchaindb-examples=commands.bigchaindb_examples:main'
+            'bigchaindb-examples=scraper:main'
         ]
     },
     install_requires=install_requires,
